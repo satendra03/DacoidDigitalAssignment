@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { EventProvider } from "./context/EventContext";
 import { Toaster } from "react-hot-toast";
 import { DateProvider } from "./context/DateContext";
+import { Analytics } from "@vercel/analytics/react"
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -14,5 +15,6 @@ createRoot(document.getElementById("root")).render(
       </EventProvider>
     </DateProvider>
     <Toaster />
+    <Analytics />
   </StrictMode>
 );
