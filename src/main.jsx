@@ -12,9 +12,10 @@ createRoot(document.getElementById("root")).render(
     <DateProvider>
       <EventProvider>
         <App />
+        <Toaster />
+        <Analytics />
       </EventProvider>
     </DateProvider>
     <Toaster />
-    <Analytics />
   </StrictMode>
 );
