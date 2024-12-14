@@ -276,7 +276,6 @@ export function Events() {
                   className={`${getTypeColor(
                     row.original.type
                   )} hover:cursor-pointer`} // Apply color based on event type
-                  onClick={() => updateEvent(row.original.id)} // Handle row click to update event
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
