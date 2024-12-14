@@ -35,6 +35,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useDateContext } from "@/context/DateContext";
 
+// Utility function to apply a color based on event type
 const getTypeColor = (type) => {
   // return "";
   switch (type) {
@@ -51,6 +52,7 @@ const getTypeColor = (type) => {
   }
 };
 
+// Column configuration for the table
 export const columns = [
   // {
   //   id: "select",
@@ -115,7 +117,7 @@ export const columns = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Start Time
-          <ArrowUpDown />
+          <ArrowUpDown /> {/* Button to toggle sorting on start time */}
         </Button>
       );
     },
@@ -142,13 +144,13 @@ export const columns = [
         <div className="actions flex justify-start gap-5 items-center">
           <div
             className="hover:cursor-pointer"
-            onClick={() => deleteEvent(row.original.id)}
+            onClick={() => deleteEvent(row.original.id)} // Call deleteEvent with the row's id
           >
             <ImBin size={20} />
           </div>
           <div
             className="hover:cursor-pointer"
-            onClick={() => updateEvent(row.original.id)}
+            onClick={() => updateEvent(row.original.id)} // Call updateEvent with the row's id
           >
             <FaPen />
           </div>
@@ -159,6 +161,7 @@ export const columns = [
 ];
 
 export function Events() {
+  // State hooks for sorting, filtering
   const [sorting, setSorting] = useState([{ id: "startTime", desc: false }]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -166,22 +169,24 @@ export function Events() {
 
   const { events, updateEvent } = useEventContext();
   const { date } = useDateContext();
-  const [todayEvents, setTodayEvents] = useState([]);
+  const [todayEvents, setTodayEvents] = useState([]); // State to store filtered events for today
 
+   // Effect to filter events based on the selected date
   useEffect(() => {
     if (events && date) {
       const temp = events.filter(
-        (e) => e.fetchId === date.toLocaleDateString()
+        (e) => e.fetchId === date.toLocaleDateString()  // Filter events by date
       );
-      setTodayEvents(temp);
+      setTodayEvents(temp); // Update state with filtered events
     }
-  }, [date, events]);
+  }, [date, events]); // Re-run the effect when events or date change
 
+   // React Table initialization with necessary options
   const table = useReactTable({
-    data: todayEvents,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
+    data: todayEvents, // Use filtered events for today
+    columns, // Use predefined columns
+    onSortingChange: setSorting, // Update sorting state when sorting changes
+    onColumnFiltersChange: setColumnFilters, // Update column filters state when filters change
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -201,12 +206,14 @@ export function Events() {
       <div className="flex items-center py-4 gap-2">
         <Input
           placeholder="Search Events..."
-          value={table.getColumn("name")?.getFilterValue() ?? ""}
+          value={table.getColumn("name")?.getFilterValue() ?? ""} // Use column filter for "name"
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value) // Set filter value when input changes
           }
           className="max-w-sm"
         />
+
+        {/* Dropdown menu for column visibility toggle */}
         <DropdownMenu className="">
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -216,18 +223,18 @@ export function Events() {
           <DropdownMenuContent align="end">
             {table
               .getAllColumns()
-              .filter((column) => column.getCanHide())
+              .filter((column) => column.getCanHide()) // Only show columns that can be hidden
               .map((column) => {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
                     className="capitalize"
-                    checked={column.getIsVisible()}
+                    checked={column.getIsVisible()} // Check visibility status of the column
                     onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
+                      column.toggleVisibility(!!value) // Toggle visibility when checkbox state changes
                     }
                   >
-                    {column.id}
+                    {column.id} {/* Display column name */}
                   </DropdownMenuCheckboxItem>
                 );
               })}
@@ -235,6 +242,7 @@ export function Events() {
         </DropdownMenu>
       </div>
 
+      {/* Table display */}
       <div className={`rounded-md border`}>
         <Table className="min-w-full">
           <TableHeader>
@@ -259,15 +267,16 @@ export function Events() {
             ))}
           </TableHeader>
           <TableBody>
+            {/* Render table rows */}
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && "selected"} // Highlight selected rows
                   className={`${getTypeColor(
                     row.original.type
-                  )} hover:cursor-pointer`}
-                  onClick={() => updateEvent(row.original.id)}
+                  )} hover:cursor-pointer`} // Apply color based on event type
+                  onClick={() => updateEvent(row.original.id)} // Handle row click to update event
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -288,19 +297,21 @@ export function Events() {
                   colSpan={columns?.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No results. {/* Display message if no rows */}
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      {/* Row selection summary */}
+      {/* Not needed now */}
+      {/* <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows?.length} of{" "}
           {table.getFilteredRowModel().rows?.length} row(s) selected.
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
