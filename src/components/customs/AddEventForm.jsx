@@ -1,3 +1,4 @@
+// Importing necessary components
 import React, { useState, useEffect } from "react";
 import {
   AlertDialog,
@@ -26,20 +27,24 @@ import { useDateContext } from "@/context/DateContext";
 import toast from "react-hot-toast";
 
 function AddEventForm() {
+  // Extracting date and event-related data from context
   const { date } = useDateContext();
   const { events, setEvents, addEvent, selectedEvent, setSelectedEvent } =
     useEventContext();
 
+  // States for managing form input values
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [selectedType, setSelectedType] = useState("work");
 
+  // States for managing validation errors
   const [startError, setStartError] = useState("");
   const [endError, setEndError] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // Controls the visibility of the dialog
 
+  // Effect hook to load data when an event is selected for editing
   useEffect(() => {
     if (selectedEvent) {
       setName(selectedEvent.name || "");
@@ -51,8 +56,10 @@ function AddEventForm() {
     }
   }, [selectedEvent]);
 
+  // Handle changes to the start time input field with validation
   const handleStartTimeChange = (e) => {
     const newStartTime = e.target.value;
+    // Ensure start time is earlier than the end time
     if (endTime && newStartTime >= endTime) {
       setStartError("Start time must be less than end time.");
     } else {
@@ -61,8 +68,10 @@ function AddEventForm() {
     setStartTime(newStartTime);
   };
 
+  // Handle changes to the end time input field with validation
   const handleEndTimeChange = (e) => {
     const newEndTime = e.target.value;
+    // Ensure end time is later than the start time
     if (startTime && newEndTime <= startTime) {
       setEndError("End time must be greater than start time.");
     } else {
@@ -71,6 +80,7 @@ function AddEventForm() {
     setEndTime(newEndTime);
   };
 
+  // Handle cancel action and reset form fields
   const handleCancel = () => {
     setName("");
     setDescription("");
@@ -78,10 +88,12 @@ function AddEventForm() {
     setEndTime("");
     setSelectedType("work");
     setSelectedEvent(null);
-    setIsOpen(false);
+    setIsOpen(false);  // Close the dialog
   };
 
+  // Handle form submission
   const onSubmit = () => {
+    // Check if all required fields are filled
     if (!name) {
       toast.error("Name is required.");
       return;
@@ -99,6 +111,7 @@ function AddEventForm() {
       return;
     }
 
+    // If editing an existing event, update it
     if (selectedEvent) {
       const updatedEvent = {
         ...selectedEvent,
@@ -117,6 +130,7 @@ function AddEventForm() {
 
       toast.success("Event updated successfully.");
     } else {
+      // Check for event conflicts when adding a new event
       const newEventStartTime = startTime;
       const newEventEndTime = endTime;
       const newEventDate = date.toLocaleDateString();
@@ -139,6 +153,7 @@ function AddEventForm() {
         return;
       }
 
+      // Add new event to the list
       const newEvent = {
         name,
         description,
@@ -155,30 +170,32 @@ function AddEventForm() {
       toast.success("Event added successfully.");
     }
 
+    // Reset the form after submission
     handleCancel();
   };
 
   return (
-    <AlertDialog open={isOpen}>
+    <AlertDialog open={isOpen}> {/* Dialog to add or update event */}
       <AlertDialogTrigger asChild>
         <Button variant="" onClick={() => setIsOpen(true)}>
-          {`Add Event for ${date.toDateString()}`}
+          {`Add Event for ${date.toDateString()}`} {/* Button to trigger dialog */}
         </Button>
       </AlertDialogTrigger>
 
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {selectedEvent ? "Update Event" : "Add New Event"}
+            {selectedEvent ? "Update Event" : "Add New Event"} {/* Dialog title */}
           </AlertDialogTitle>
           <AlertDialogDescription>
             {selectedEvent
               ? "Update the event details below."
-              : "Please fill out the form to add a new event."}
+              : "Please fill out the form to add a new event."} {/* Description */}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <div className="space-y-4">
+          {/* Event Name Input */}
           <div>
             <Label htmlFor="name">Event Name</Label>
             <Input
@@ -190,6 +207,7 @@ function AddEventForm() {
             />
           </div>
 
+          {/* Event Description Input */}
           <div>
             <Label htmlFor="desc">Event Description</Label>
             <Input
@@ -199,7 +217,8 @@ function AddEventForm() {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-
+          
+          {/* Start Time Input */}
           <div>
             <Label htmlFor="startTime">Start Time</Label>
             <Input
@@ -211,7 +230,8 @@ function AddEventForm() {
             />
             {startError && <p className="text-red-500">{startError}</p>}
           </div>
-
+          
+          {/* End Time Input */}
           <div>
             <Label htmlFor="endTime">End Time</Label>
             <Input
@@ -223,7 +243,8 @@ function AddEventForm() {
             />
             {endError && <p className="text-red-500">{endError}</p>}
           </div>
-
+          
+          {/* Event Type Dropdown */}
           <div>
             <Label htmlFor="type">Event Type</Label>
             <Select
@@ -244,6 +265,7 @@ function AddEventForm() {
             </Select>
           </div>
 
+          {/* Dialog Footer with Cancel and Submit buttons */}
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={onSubmit}>
