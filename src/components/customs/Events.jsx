@@ -275,7 +275,7 @@ export function Events() {
                   data-state={row.getIsSelected() && "selected"} // Highlight selected rows
                   className={`${getTypeColor(
                     row.original.type
-                  )} hover:cursor-pointer`} // Apply color based on event type
+                  )}`} // Apply color based on event type
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
